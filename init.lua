@@ -1,8 +1,8 @@
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
-vim.g.have_nerd_font = false
 vim.o.number = true
+vim.g.have_nerd_font = false
 vim.o.mouse = 'a'
 
 vim.o.showmode = false
@@ -36,7 +36,8 @@ vim.o.scrolloff = 10
 
 vim.o.confirm = true
 
-vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
+-- Load keybindings
+require 'keybinds'
 
 vim.diagnostic.config {
   update_in_insert = false,
@@ -49,15 +50,6 @@ vim.diagnostic.config {
 
   jump = { float = true },
 }
-
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
-
-vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
-
-vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
-vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
-vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
-vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
 vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
@@ -98,15 +90,48 @@ end
 require('lazy').setup({
   { 'NMAC427/guess-indent.nvim', opts = {} },
 
+  { 'saghen/filler-begone.nvim' },
+
+  { 'nvim-tree/nvim-web-devicons', opts = {} },
+
   {
-    'nvimdev/dashboard-nvim',
-    event = 'VimEnter',
+    'NeogitOrg/neogit',
+    lazy = true,
+    dependencies = {
+      'nvim-lua/plenary.nvim', -- required
+      'sindrets/diffview.nvim', -- optional - Diff integration
+
+      -- Only one of these is needed.
+      'nvim-telescope/telescope.nvim', -- optional
+      'ibhagwan/fzf-lua', -- optional
+      'nvim-mini/mini.pick', -- optional
+      'folke/snacks.nvim', -- optional
+    },
+    cmd = 'Neogit',
+    keys = {
+      { '<leader>gg', '<cmd>Neogit<cr>', desc = 'Show Neogit UI' },
+    },
+  },
+
+  {
+    'olimorris/codecompanion.nvim',
+    version = '^18.0.0',
+    opts = {},
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'nvim-treesitter/nvim-treesitter',
+    },
+  },
+
+  {
+    'toppair/peek.nvim',
+    event = { 'VeryLazy' },
+    build = 'deno task --quiet build:fast',
     config = function()
-      require('dashboard').setup {
-        -- config
-      }
+      require('peek').setup()
+      vim.api.nvim_create_user_command('PeekOpen', require('peek').open, {})
+      vim.api.nvim_create_user_command('PeekClose', require('peek').close, {})
     end,
-    dependencies = { { 'nvim-tree/nvim-web-devicons' } },
   },
 
   {
@@ -373,7 +398,6 @@ require('lazy').setup({
         --    https://github.com/pmizio/typescript-tools.nvim
         --
         -- But for many setups, the LSP (`ts_ls`) will work just fine
-        -- ts_ls = {},
       }
 
       -- Ensure the servers and tools above are installed
@@ -386,6 +410,7 @@ require('lazy').setup({
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         --'lua_ls', -- Lua Language server
+        'typescript-language-server',
         'lua-language-server',
         'stylua', -- Used to format Lua code
         -- You can add other tools here that you want Mason to install
@@ -522,7 +547,7 @@ require('lazy').setup({
         -- <c-k>: Toggle signature help
         --
         -- See :h blink-cmp-config-keymap for defining your own keymap
-        preset = 'default',
+        preset = 'enter',
 
         -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
         --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
