@@ -95,6 +95,8 @@ require('lazy').setup({
 
   { 'nvim-tree/nvim-web-devicons', opts = {} },
 
+  { 'nvim-pack/nvim-spectre', opts = {} },
+
   {
     'NeogitOrg/neogit',
     lazy = true,
