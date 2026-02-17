@@ -1,4 +1,5 @@
 vim.g.mapleader = ' '
+
 vim.g.maplocalleader = ' '
 
 vim.o.number = true
@@ -412,6 +413,7 @@ require('lazy').setup({
         --'lua_ls', -- Lua Language server
         'typescript-language-server',
         'lua-language-server',
+        'pyright',
         'stylua', -- Used to format Lua code
         -- You can add other tools here that you want Mason to install
       })
